@@ -15,6 +15,7 @@
             overflow: hidden;
             height: 100vh;
             width: 100vw;
+            touch-action: manipulation;
         }
         .neon-glow {
             text-shadow: 0 0 20px rgba(139, 92, 246, 0.6), 0 0 40px rgba(139, 92, 246, 0.4);
@@ -37,28 +38,33 @@
         .bingo-grid {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
-            gap: 4px;
+            gap: 2px;
             height: 100%;
+        }
+        @media (min-width: 768px) {
+            .bingo-grid { gap: 4px; }
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
 
         /* Custom Landscape Overrides for Mobile */
         @media (orientation: landscape) and (max-height: 600px) {
             .mobile-landscape-row { flex-direction: row !important; }
-            .mobile-landscape-w-left { width: 40% !important; flex: none !important; }
-            .mobile-landscape-w-right { width: 60% !important; flex: none !important; }
+            .mobile-landscape-w-left { width: 42% !important; flex: none !important; }
+            .mobile-landscape-w-right { width: 58% !important; flex: none !important; }
             .mobile-landscape-p { padding: 0.5rem !important; }
             .mobile-landscape-hide { display: none !important; }
-            .mobile-landscape-btn-height { py: 1rem !important; height: auto !important; }
-            .mobile-landscape-num-size { width: 6rem !important; height: 6rem !important; }
-            .mobile-landscape-text-xl { font-size: 3rem !important; }
-            .mobile-landscape-rhyme-text { font-size: 0.875rem !important; margin-top: 0.5rem !important; }
+            .mobile-landscape-num-size { width: 7rem !important; height: 7rem !important; }
+            .mobile-landscape-text-xl { font-size: 3.5rem !important; }
+            .mobile-landscape-rhyme-text { font-size: 0.9rem !important; margin-top: 0.5rem !important; }
         }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "react/": "https://esm.sh/react@^19.2.4/"
   }
@@ -68,7 +74,7 @@
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
 <script type="module" src="/index.tsx"></script>
 </body>
 </html>
