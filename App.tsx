@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { BingoState } from './types';
-import { BINGO_RHYMES } from './constants/bingoRhymes';
+import { BingoState } from './types.ts';
+import { BINGO_RHYMES } from './constants/bingoRhymes.ts';
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<BingoState>({
