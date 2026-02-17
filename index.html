@@ -49,22 +49,35 @@
         /* Custom Landscape Overrides for Mobile */
         @media (orientation: landscape) and (max-height: 600px) {
             .mobile-landscape-row { flex-direction: row !important; }
-            .mobile-landscape-w-left { width: 42% !important; flex: none !important; }
-            .mobile-landscape-w-right { width: 58% !important; flex: none !important; }
+            .mobile-landscape-w-left { width: 45% !important; flex: none !important; }
+            .mobile-landscape-w-right { width: 55% !important; flex: none !important; }
             .mobile-landscape-p { padding: 0.5rem !important; }
+            
+            /* Restore Title in Landscape but make it smaller */
+            .mobile-landscape-header { height: 2.5rem !important; margin-bottom: 0.25rem !important; }
+            .mobile-landscape-title-text { font-size: 0.8rem !important; }
+            
             .mobile-landscape-hide { display: none !important; }
-            .mobile-landscape-num-size { width: 7rem !important; height: 7rem !important; }
+            .mobile-landscape-num-size { width: 6.5rem !important; height: 6.5rem !important; }
             .mobile-landscape-text-xl { font-size: 3.5rem !important; }
-            .mobile-landscape-rhyme-text { font-size: 0.9rem !important; margin-top: 0.5rem !important; }
+            .mobile-landscape-rhyme-text { font-size: 0.8rem !important; margin-top: 0.25rem !important; }
+            
+            .mobile-landscape-btn-pad { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
         }
     </style>
-<script type="importmap">
+    <script>
+        // Critical for React ESM loading
+        window.process = { env: { NODE_ENV: 'production' } };
+    </script>
+    <!-- ES Module Shims for broad browser support -->
+    <script async src="https://ga.jspm.io/npm:es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+    <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "react/": "https://esm.sh/react@^19.2.4/"
   }

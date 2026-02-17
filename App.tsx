@@ -108,13 +108,13 @@ const App: React.FC = () => {
 
   return (
     <div className="h-screen w-screen flex flex-col p-1.5 md:p-6 gap-1.5 md:gap-4 bg-slate-950 text-slate-50 overflow-hidden">
-      {/* Header */}
-      <header className="flex items-center justify-between flex-shrink-0 px-2 mobile-landscape-hide">
+      {/* Header - Restored visibility in landscape */}
+      <header className="flex items-center justify-between flex-shrink-0 px-2 mobile-landscape-header">
         <div className="flex flex-col">
-          <h1 className="text-xs md:text-3xl font-black bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent uppercase tracking-tight leading-none">
+          <h1 className="text-xs md:text-3xl font-black bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent uppercase tracking-tight leading-none mobile-landscape-title-text">
             Pallion Action Group BINGO!
           </h1>
-          <span className="text-[5px] md:text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em] mt-0.5">2026 Community Edition</span>
+          <span className="text-[5px] md:text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em] mt-0.5 mobile-landscape-hide">2026 Community Edition</span>
         </div>
         <div className="bg-slate-900/80 px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-white/10 shadow-xl flex items-baseline gap-1 md:gap-2">
           <span className="text-slate-500 font-bold text-[6px] md:text-[10px] uppercase">Calls</span>
@@ -132,7 +132,7 @@ const App: React.FC = () => {
             <button
               onClick={drawNumber}
               disabled={gameState.remainingNumbers.length === 0 || isRolling}
-              className={`w-full py-2 md:py-12 rounded-lg md:rounded-[1.5rem] bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white font-black text-lg md:text-6xl shadow-2xl shadow-violet-500/30 active:scale-95 transition-all disabled:opacity-50 border-t border-white/20 flex-shrink-0 ${!isRolling && gameState.remainingNumbers.length > 0 ? 'animate-pulse' : ''}`}
+              className={`w-full py-2 md:py-12 rounded-lg md:rounded-[1.5rem] bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white font-black text-lg md:text-6xl shadow-2xl shadow-violet-500/30 active:scale-95 transition-all disabled:opacity-50 border-t border-white/20 flex-shrink-0 mobile-landscape-btn-pad ${!isRolling && gameState.remainingNumbers.length > 0 ? 'animate-pulse' : ''}`}
             >
               {isRolling ? <i className="fas fa-sync fa-spin"></i> : 'DRAW'}
             </button>
