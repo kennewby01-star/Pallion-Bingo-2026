@@ -5,15 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pallion Action Group BINGO!</title>
-    <!-- Tailwind for styling -->
+    
+    <!-- Scripts for No-Build Setup -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Babel to compile TSX in the browser for GitHub Pages -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
         body {
             font-family: 'Inter', sans-serif;
@@ -22,6 +23,7 @@
             overflow: hidden; 
             height: 100vh;
             width: 100vw;
+            margin: 0;
         }
 
         .bingo-grid {
@@ -79,23 +81,172 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-
-    <script type="importmap">
+<script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/"
   }
 }
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-slate-950 text-slate-50">
-    <div id="root" class="h-full w-full"></div>
-    <!-- Load the main app entry point -->
-    <script type="text/babel" data-type="module" src="index.tsx"></script>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useCallback, useMemo, useRef, useEffect } = React;
+
+        const BINGO_RHYMES = {
+            1: "Kelly's Eye", 2: "One Little Duck", 3: "Cup of Tea", 4: "Knock at the Door", 5: "Man Alive",
+            6: "Tom Mix", 7: "Lucky Seven", 8: "Garden Gate", 9: "Doctor's Orders", 10: "Uncle Ben",
+            11: "Legs Eleven", 12: "One Dozen", 13: "Unlucky for Some", 14: "Valentine's Day", 15: "Young and Keen",
+            16: "Sweet Sixteen", 17: "Dancing Queen", 18: "Coming of Age", 19: "Goodbye Teens", 20: "One Score",
+            21: "Royal Salute", 22: "Two Little Ducks", 23: "Thee and Me", 24: "Two Dozen", 25: "Duck and Dive",
+            26: "Pick and Mix", 27: "Gateway to Heaven", 28: "Overweight", 29: "Rise and Shine", 30: "Dirty Gertie",
+            31: "Get Up and Run", 32: "Buckle My Shoe", 33: "Dirty Knee", 34: "Ask for More", 35: "Jump and Jive",
+            36: "Three Dozen", 37: "More than 11", 38: "Christmas Cake", 39: "Steps", 40: "Life Begins",
+            41: "Time for Fun", 42: "Winnie the Pooh", 43: "Down on Your Knee", 44: "Droopy Drawers", 45: "Halfway There",
+            46: "Up to Tricks", 47: "Four and Seven", 48: "Four Dozen", 49: "PC 49", 50: "Half a Century",
+            51: "Tweak of the Thumb", 52: "Weeks in a Year", 53: "Stuck in the Tree", 54: "Clean the Floor", 55: "Snakes Alive",
+            56: "Was She Worth It?", 57: "Heinz Varieties", 58: "Make Them Wait", 59: "Brighton Line", 60: "Five Dozen",
+            61: "Bakers Bun", 62: "Turn on the Screw", 63: "Tickle Me 63", 64: "Red Raw", 65: "Old Age Pension",
+            66: "Clickety Click", 67: "Made in Heaven", 68: "Saving Grace", 69: "Either Way Up", 70: "Three Score and Ten",
+            71: "Bang on the Drum", 72: "Six Dozen", 73: "Queen B", 74: "Candy Store", 75: "Strive and Strive",
+            76: "Trombones", 77: "Sunset Strip", 78: "Heaven's Gate", 79: "One More Time", 80: "Eight and Blank",
+            81: "Stop and Run", 82: "Straight on Through", 83: "Time for Tea", 84: "Seven Dozen", 85: "Staying Alive",
+            86: "Between the Sticks", 87: "Torquay in Devon", 88: "Two Fat Ladies", 89: "Nearly There", 90: "Top of the Shop"
+        };
+
+        const App = () => {
+            const [gameState, setGameState] = useState({
+                allNumbers: Array.from({ length: 90 }, (_, i) => i + 1),
+                drawnNumbers: [],
+                currentNumber: null,
+                remainingNumbers: Array.from({ length: 90 }, (_, i) => i + 1),
+            });
+
+            const [isAnimate, setIsAnimate] = useState(false);
+            const [isRolling, setIsRolling] = useState(false);
+            const [rollingNumber, setRollingNumber] = useState(null);
+            const rollIntervalRef = useRef(null);
+
+            const drawNumber = useCallback(() => {
+                if (gameState.remainingNumbers.length === 0 || isRolling) return;
+                setIsRolling(true);
+                setIsAnimate(false);
+                let count = 0;
+                rollIntervalRef.current = setInterval(() => {
+                    setRollingNumber(Math.floor(Math.random() * 90) + 1);
+                    count++;
+                    if (count >= 10) {
+                        clearInterval(rollIntervalRef.current);
+                        const randomIndex = Math.floor(Math.random() * gameState.remainingNumbers.length);
+                        const newNumber = gameState.remainingNumbers[randomIndex];
+                        setGameState(prev => ({
+                            ...prev,
+                            currentNumber: newNumber,
+                            drawnNumbers: [newNumber, ...prev.drawnNumbers],
+                            remainingNumbers: prev.remainingNumbers.filter(n => n !== newNumber)
+                        }));
+                        setIsRolling(false);
+                        setIsAnimate(true);
+                        setTimeout(() => setIsAnimate(false), 400);
+                    }
+                }, 50);
+            }, [gameState.remainingNumbers, isRolling]);
+
+            const undoLastDraw = () => {
+                if (gameState.drawnNumbers.length === 0) return;
+                const [last, ...rest] = gameState.drawnNumbers;
+                setGameState(prev => ({
+                    ...prev,
+                    drawnNumbers: rest,
+                    currentNumber: rest[0] || null,
+                    remainingNumbers: [...prev.remainingNumbers, last].sort((a,b) => a-b)
+                }));
+            };
+
+            const resetGame = () => {
+                if(confirm("Are you sure you want to reset the game?")) {
+                    setGameState({
+                        allNumbers: Array.from({ length: 90 }, (_, i) => i + 1),
+                        drawnNumbers: [],
+                        currentNumber: null,
+                        remainingNumbers: Array.from({ length: 90 }, (_, i) => i + 1),
+                    });
+                }
+            };
+
+            const progress = (gameState.drawnNumbers.length / 90) * 100;
+
+            return (
+                <div className="h-screen w-screen flex flex-col p-2 md:p-4 gap-2 md:gap-4 overflow-hidden bg-slate-950">
+                    <header className="flex items-center justify-between px-2 h-8 md:h-10 flex-shrink-0">
+                        <h1 className="text-sm md:text-2xl font-black bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                            Pallion Action Group BINGO!
+                        </h1>
+                        <div className="bg-slate-900/80 px-3 py-1 rounded-full border border-white/5">
+                            <span className="text-xs md:text-lg font-black text-slate-200">{gameState.drawnNumbers.length}/90</span>
+                        </div>
+                    </header>
+
+                    <main className="flex-1 min-h-0 flex flex-col md:flex-row landscape-row gap-2 md:gap-4 overflow-hidden">
+                        <div className="md:w-[45%] landscape-w-left flex flex-col gap-2 md:gap-4 flex-shrink-0 min-h-0">
+                            <div className="gradient-border rounded-2xl md:rounded-3xl flex-1 flex flex-row items-center justify-between p-3 md:p-8 relative overflow-hidden gap-2 md:gap-4 landscape-p">
+                                <div className="flex flex-col items-center justify-center flex-1">
+                                    <div className={`relative flex items-center justify-center w-24 h-24 md:w-48 md:h-48 landscape-num-size rounded-full border-2 md:border-4 border-violet-500/20 bg-slate-950 transition-transform duration-150 ${isAnimate ? 'scale-105' : ''}`}>
+                                        <span className={`text-4xl md:text-8xl font-black neon-glow ${isRolling ? 'rolling-effect' : 'text-violet-400'}`}>
+                                            {isRolling ? rollingNumber : (gameState.currentNumber ?? '—')}
+                                        </span>
+                                    </div>
+                                    <div className="mt-2 md:mt-4 h-6 text-fuchsia-400 font-bold text-[10px] md:text-sm uppercase tracking-widest text-center">
+                                        {gameState.currentNumber && !isRolling ? `"${BINGO_RHYMES[gameState.currentNumber]}"` : ""}
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-2 w-32 md:w-56 flex-shrink-0">
+                                    <button onClick={drawNumber} disabled={isRolling || gameState.remainingNumbers.length === 0} className="w-full py-4 md:py-8 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white font-black text-sm md:text-2xl disabled:opacity-50 active:scale-95 transition-all">
+                                        {isRolling ? "..." : "DRAW"}
+                                    </button>
+                                    <div className="flex gap-2">
+                                        <button onClick={undoLastDraw} className="flex-1 py-2 bg-slate-800 rounded-lg text-[8px] md:text-xs font-bold">UNDO</button>
+                                        <button onClick={resetGame} className="flex-1 py-2 bg-slate-800 rounded-lg text-[8px] md:text-xs font-bold">RESET</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-900/40 rounded-xl p-2 border border-white/5 landscape-p">
+                                <h3 className="text-slate-600 font-bold uppercase text-[8px] mb-1">History</h3>
+                                <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+                                    {gameState.drawnNumbers.slice(1, 10).map((n, i) => (
+                                        <div key={i} className="w-6 h-6 md:w-8 md:h-8 flex-shrink-0 bg-slate-800 rounded flex items-center justify-center text-[10px] font-bold text-slate-400 border border-white/5">{n}</div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 md:w-[55%] landscape-w-right flex flex-col bg-slate-900/30 rounded-2xl p-2 md:p-6 border border-white/5 overflow-hidden landscape-p">
+                            <div className="bingo-grid h-full">
+                                {gameState.allNumbers.map(num => (
+                                    <div key={num} className={`flex items-center justify-center rounded border text-[8px] md:text-sm font-black transition-all ${gameState.currentNumber === num && !isRolling ? 'bg-fuchsia-500 text-white scale-105 border-fuchsia-300' : gameState.drawnNumbers.includes(num) ? 'bg-violet-500/30 text-violet-200 border-violet-500/40' : 'bg-slate-800/10 text-slate-800 border-transparent'}`}>
+                                        {num}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </main>
+                    <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden landscape-hide">
+                        <div className="h-full bg-violet-500 transition-all duration-500" style={{width: `${progress}%`}}></div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 <script type="module" src="/index.tsx"></script>
 </body>
 </html>
